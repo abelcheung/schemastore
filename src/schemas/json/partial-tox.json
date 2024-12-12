@@ -322,6 +322,36 @@
           "key": "https://tox.wiki/en/stable/config.html#ignore_base_python_conflict"
         }
       }
+    },
+    "gh-actions": {
+      "$comment": "As of tox-gh-actions 3.2.0, no native toml configuration is supported. Keys have to be set as multiline strings.",
+      "type": "object",
+      "properties": {
+        "python": { "type": "string" }
+      },
+      "required": ["python"],
+      "title": "tox plugin which helps running tox on GitHub Actions",
+      "description": "When executed under GitHub Actions, this plugin will read `env_list` and pick only those environments suitable to run according to configuration.",
+      "markdownDescription": "When executed under GitHub Actions, this plugin will read `env_list` and pick only those environments suitable to run according to configuration.",
+      "x-intellij-html-description": "<p>When executed under GitHub Actions, this plugin will read <code>env_list</code> and pick only those environments suitable to run according to configuration.</p>",
+      "x-taplo": {
+        "links": {
+          "key": "https://github.com/ymyzk/tox-gh-actions?tab=readme-ov-file#tox-gh-actions-configuration"
+        }
+      }
+    },
+    "gh-actions:env": {
+      "type": "object",
+      "title": "Pick tox environment based on environment variables",
+      "description": "Provides a mean to perform conditional execution based on environment variables, such as installation of platform dependent requirements. Environment variables have to be specified in uppercase.",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "x-taplo": {
+        "links": {
+          "key": "https://github.com/ymyzk/tox-gh-actions?tab=readme-ov-file#factor-conditional-settings-environment-variable"
+        }
+      }
     }
   }
 }
