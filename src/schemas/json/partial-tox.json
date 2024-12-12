@@ -1,14 +1,200 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://json.schemastore.org/partial-tox.json",
-  "title": "Tox configuration in pyproject.toml",
-  "description": "Schema for the [tool.tox] section in pyproject.toml",
+  "title": "Tool for building and testing Python packages",
+  "description": "Tox is a command-line tool that automates building and testing package in Python environments. This represents TOML configuration for `tox`.",
+  "x-taplo": {
+    "links": {
+      "key": "https://tox.wiki/en/stable/config.html#pyproject-toml-native"
+    }
+  },
   "type": "object",
-  "additionalProperties": true,
+  "additionalProperties": false,
+  "definitions": {
+    "struct": {
+      "replace-env": {
+        "type": "object",
+        "title": "replace-env",
+        "description": "Tox environment key reference replacement as a list.",
+        "markdownDescription": "Tox environment key reference replacement as a list.",
+        "x-intellij-html-description": "<p>Tox environment key reference replacement as a list.</p>",
+        "additionalProperties": false,
+        "properties": {
+          "replace": { "const": "ref" },
+          "env": {
+            "type": "string",
+            "description": "Tox environment from which the source key is retrieved."
+          },
+          "key": {
+            "type": "string",
+            "description": "The key name to get reference from."
+          },
+          "extend": { "const": false }
+        },
+        "required": ["replace", "env", "key"],
+        "x-taplo": {
+          "links": {
+            "key": "https://tox.wiki/en/stable/config.html#configuration-reference"
+          }
+        }
+      },
+      "replace-env-extend": {
+        "type": "object",
+        "title": "replace-env-extend",
+        "description": "Tox environment key reference replacement as extended items.",
+        "markdownDescription": "Tox environment key reference replacement as extended items.",
+        "x-intellij-html-description": "<p>Tox environment key reference replacement as extended items.</p>",
+        "additionalProperties": false,
+        "properties": {
+          "replace": { "const": "ref" },
+          "env": {
+            "type": "string",
+            "description": "Tox environment from which the source key is retrieved."
+          },
+          "key": {
+            "type": "string",
+            "description": "The key name to get reference from."
+          },
+          "extend": { "const": true }
+        },
+        "required": ["replace", "env", "key", "extend"],
+        "x-taplo": {
+          "links": {
+            "key": "https://tox.wiki/en/stable/config.html#configuration-reference"
+          }
+        }
+      },
+      "replace-raw": {
+        "type": "object",
+        "title": "replace-raw",
+        "description": "Direct configuration value replacement as a list.",
+        "markdownDescription": "Direct configuration value replacement as a list.",
+        "x-intellij-html-description": "<p>Direct configuration value replacement as a list.</p>",
+        "additionalProperties": false,
+        "properties": {
+          "replace": { "const": "ref" },
+          "of": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The full key to get config value from, as a list of components."
+          },
+          "extend": { "const": false }
+        },
+        "required": ["replace", "of"],
+        "x-taplo": {
+          "links": {
+            "key": "https://tox.wiki/en/stable/config.html#configuration-reference"
+          }
+        }
+      },
+      "replace-raw-extend": {
+        "type": "object",
+        "title": "replace-raw-extend",
+        "description": "Direct configuration value replacement as extended items.",
+        "markdownDescription": "Direct configuration value replacement as extended items.",
+        "x-intellij-html-description": "<p>Direct configuration value replacement as extended items.</p>",
+        "additionalProperties": false,
+        "properties": {
+          "replace": { "const": "ref" },
+          "of": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The full key to get config value from, as a list of components."
+          },
+          "extend": { "const": true }
+        },
+        "required": ["replace", "of", "extend"],
+        "x-taplo": {
+          "links": {
+            "key": "https://tox.wiki/en/stable/config.html#configuration-reference"
+          }
+        }
+      },
+      "array-of-strings": {
+        "anyOf": [
+          { "$ref": "#/definitions/struct/replace-raw" },
+          {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                { "type": "string" },
+                { "$ref": "#/definitions/struct/replace-raw-extend" }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
   "properties": {
+    "requires": {
+      "allOf": [
+        { "$ref": "#/definitions/struct/array-of-strings" },
+        {
+          "title": "Basic dependencies for tox invocation",
+          "description": "list of [dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/) that must be satisfied in the Python environment hosting tox when running the `tox` command. If any of these dependencies are not satisfied will automatically create a provisioned tox environment that does not have this issue, and run the `tox` command within that environment.",
+          "markdownDescription": "list of [dependency specifiers](https://packaging.python.org/en/latest/specifications/dependency-specifiers/) that must be satisfied in the Python environment hosting tox when running the `tox` command. If any of these dependencies are not satisfied will automatically create a provisioned tox environment that does not have this issue, and run the `tox` command within that environment.",
+          "x-intellij-html-description": "<p>list of <a href=\"https://packaging.python.org/en/latest/specifications/dependency-specifiers/\">dependency specifiers</a> that must be satisfied in the Python environment hosting tox when running the <code>tox</code> command. If any of these dependencies are not satisfied will automatically create a provisioned tox environment that does not have this issue, and run the <code>tox</code> command within that environment.</p>",
+          "default": [],
+          "x-taplo": {
+            "links": {
+              "key": "https://tox.wiki/en/stable/config.html#requires"
+            }
+          }
+        }
+      ]
+    },
+    "provision_tox_env": {
+      "type": "string",
+      "title": "Provisional tox environment",
+      "description": "Name of the tox environment used to provision a valid tox run environment.",
+      "markdownDescription": "Name of the tox environment used to provision a valid tox run environment.",
+      "x-intellij-html-description": "<p>Name of the tox environment used to provision a valid tox run environment.</p>",
+      "default": ".tox",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#provision_tox_env"
+        }
+      }
+    },
+    "min_version": {
+      "type": "string",
+      "title": "Minimum tox version",
+      "description": "Minimum version of `tox` required to run. If the host’s tox version is less than this, it will automatically create a provisioned tox environment that satisfies this requirement.",
+      "markdownDescription": "Minimum version of `tox` required to run. If the host’s tox version is less than this, it will automatically create a provisioned tox environment that satisfies this requirement.",
+      "x-intellij-html-description": "<p>Minimum version of <code>tox</code> required to run. If the host’s tox version is less than this, it will automatically create a provisioned tox environment that satisfies this requirement.</p>",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#min_version"
+        }
+      }
+    },
+    "minversion": { "$ref": "#/properties/min_version" },
+    "env_list": {
+      "allOf": [
+        { "$ref": "#/definitions/struct/array-of-strings" },
+        {
+          "title": "`tox` environments to run by default",
+          "description": "List of environments to run by default (when the user does not specify anything during the invocation).",
+          "markdownDescription": "List of environments to run by default (when the user does not specify anything during the invocation).",
+          "x-intellij-html-description": "<p>List of environments to run by default (when the user does not specify anything during the invocation).</p>",
+          "default": [],
+          "x-taplo": {
+            "links": {
+              "key": "https://tox.wiki/en/stable/config.html#env_list"
+            }
+          }
+        }
+      ]
+    },
+    "envlist": { "$ref": "#/properties/env_list" },
     "legacy_tox_ini": {
       "type": "string",
-      "title": "Tox configuration in ini format",
+      "title": "ini config inside TOML file",
       "description": "This is equivalent to tox.ini format, with the difference that the text is stored instead inside the pyproject.toml file under the tool.tox table and legacy_tox_ini key.",
       "markdownDescription": "This is equivalent to `tox.ini` format, with the difference that the text is stored instead inside the `pyproject.toml` file under the `tool.tox` table and `legacy_tox_ini` key.",
       "x-intellij-html-description": "<p>This is equivalent to <code>tox.ini</code> format, with the difference that the text is stored instead inside the <code>pyproject.toml</code> file under the <code>tool.tox</code> table and <code>legacy_tox_ini</code> key.</p>",
@@ -19,8 +205,123 @@
         }
       },
       "examples": [
-        "[tool.tox]\nlegacy_tox_ini = \"\"\"\n[tox]\nenvlist = py38\n[testenv]\ncommands = pytest\n\"\"\""
+        "\"\"\"\n[tox]\nenvlist = py38\n[testenv]\ncommands = pytest\n\"\"\""
       ]
+    },
+    "skip_missing_interpreters": {
+      "type": "boolean",
+      "title": "Skip missing interpreters",
+      "description": "If set to `true`, `tox` will not create environments for interpreters not found on system. Otherwise, `tox` will treat missing interpreters as an error.",
+      "markdownDescription": "If set to `true`, `tox` will not create environments for interpreters not found on system. Otherwise, `tox` will treat missing interpreters as an error.",
+      "x-intellij-html-description": "<p>If set to <code>true</code>, <code>tox</code> will not create environments for interpreters not found on system. Otherwise, <code>tox</code> will treat missing interpreters as an error.</p>",
+      "default": true,
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#skip_missing_interpreters"
+        }
+      }
+    },
+    "tox_root": {
+      "type": "string",
+      "title": "Tox root directory",
+      "description": "Root directory for the `tox` project, generally it is the folder containing this configuration file.",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#tox_root"
+        }
+      }
+    },
+    "toxinidir": { "$ref": "#/properties/tox_root" },
+    "work_dir": {
+      "type": "string",
+      "title": "Tox working directory",
+      "description": "Directory where `tox` will create its working files. This directory will be created if it does not exist.",
+      "markdownDescription": "Directory where `tox` will create its working files. This directory will be created if it does not exist.",
+      "x-intellij-html-description": "<p>Directory where <code>tox</code> will create its working files. This directory will be created if it does not exist.</p>",
+      "default": "{tox_root}/.tox",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#work_dir"
+        }
+      }
+    },
+    "toxworkdir": { "$ref": "#/properties/work_dir" },
+    "temp_dir": {
+      "type": "string",
+      "title": "Tox temporary directory",
+      "description": "Directory where `tox` will create temporary files.",
+      "markdownDescription": "Directory where `tox` will create temporary files.",
+      "x-intellij-html-description": "<p>Directory where <code>tox</code> will create temporary files.</p>",
+      "default": "{work_dir}/.tmp",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#temp_dir"
+        }
+      }
+    },
+    "no_package": {
+      "type": "boolean",
+      "title": "Disable package installation",
+      "description": "If set to `true`, `tox` will not install the package before running the tests.",
+      "markdownDescription": "If set to `true`, `tox` will not install the package before running the tests.",
+      "x-intellij-html-description": "<p>If set to <code>true</code>, <code>tox</code> will not install the package before running the tests.</p>",
+      "default": false,
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#no_package"
+        }
+      }
+    },
+    "skipsdist": { "$ref": "#/properties/no_package" },
+    "package_env": {
+      "type": "string",
+      "title": "Package environment",
+      "description": "Default name of the virtual environment used to create a source distribution from the source tree.",
+      "default": ".pkg",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#package_env"
+        }
+      }
+    },
+    "isolated_build_env": { "$ref": "#/properties/package_env" },
+    "package_root": {
+      "type": "string",
+      "title": "Package root directory",
+      "description": "Indicates where the packaging root file exists.",
+      "default": "{tox_root}",
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#package_root"
+        }
+      }
+    },
+    "setupdir": { "$ref": "#/properties/package_root" },
+    "labels": {
+      "type": "object",
+      "title": "Environment labels",
+      "description": "Mapping of label names to environments it applies too.",
+      "additionalProperties": {
+        "$ref": "#/definitions/struct/array-of-strings"
+      },
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#labels"
+        }
+      }
+    },
+    "ignore_base_python_conflict": {
+      "type": "boolean",
+      "title": "Ignore base Python conflict",
+      "description": "If set to `true`, `tox` will not raise error if Python interpreter version implied from environment name conflicts with [`base_python`](https://tox.wiki/en/stable/config.html#base_python) setting.",
+      "markdownDescription": "If set to `true`, `tox` will not raise error if Python interpreter version implied from environment name conflicts with [`base_python`](https://tox.wiki/en/stable/config.html#base_python) setting.",
+      "x-intellij-html-description": "<p>If set to <code>true</code>, <code>tox</code> will not raise error if Python interpreter version implied from environment name conflicts with <a href=\"https://tox.wiki/en/stable/config.html#base_python\"><code>base_python</code></a> setting.</p>",
+      "default": false,
+      "x-taplo": {
+        "links": {
+          "key": "https://tox.wiki/en/stable/config.html#ignore_base_python_conflict"
+        }
+      }
     }
   }
 }
